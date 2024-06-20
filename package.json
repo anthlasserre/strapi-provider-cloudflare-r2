@@ -36,7 +36,7 @@
   "scripts": {
     "test": "echo \"no tests yet\"",
     "semantic-release": "semantic-release",
-    "build": "tsc",
+    "build": "yarn tsc --project ./tsconfig.json",
     "postinstall": "npm run build && rm -rf ./lib/*.ts"
   },
   "release": {
