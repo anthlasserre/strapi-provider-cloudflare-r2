@@ -36,7 +36,8 @@
   "scripts": {
     "test": "echo \"no tests yet\"",
     "semantic-release": "semantic-release",
-    "build": "tsc"
+    "build": "tsc",
+    "postinstall": "npm run build && rm -rf ./lib/*.ts"
   },
   "release": {
     "branches": [
