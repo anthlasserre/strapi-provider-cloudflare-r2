@@ -13,6 +13,9 @@ const {
 const {
   getSignedUrl: getS3SignedUrl,
 } = require("@aws-sdk/s3-request-presigner");
+const path = require("path");
+const fs = require("fs");
+const { compress: compressPDF } = require("compress-pdf");
 
 type StrapiFile = {
   path: string;
@@ -36,11 +39,20 @@ type PluginConfig = {
   };
 };
 
-function removeLeadingSlash(str: string) {
-  return str.replace(/^\//, "");
-}
+const compressDocument = async (
+  file: StrapiFile
+): Promise<unknown | Buffer> => {
+  if (file.ext === ".pdf") {
+    return compressPDF(file.stream || Buffer.from(file.buffer, "binary"));
+  }
+  return file.stream || Buffer.from(file.buffer, "binary");
+};
 
-function getPathKey(file: StrapiFile, pool = false) {
+const removeLeadingSlash = (str: string) => {
+  return str.replace(/^\//, "");
+};
+
+const getPathKey = (file: StrapiFile, pool = false) => {
   const filePath = file.path ? `${file.path}/` : "";
   let path = filePath;
   if (!pool) {
@@ -52,12 +64,12 @@ function getPathKey(file: StrapiFile, pool = false) {
 
   const Key = `${path}${file.hash}${file.ext}`;
   return { path, Key };
-}
+};
 
-function assertUrlProtocol(url: string) {
+const assertUrlProtocol = (url: string) => {
   // Regex to test protocol like "http://", "https://"
   return /^\w*:\/\//.test(url);
-}
+};
 
 module.exports = {
   init: (config: PluginConfig) => {
@@ -103,13 +115,14 @@ module.exports = {
 
     const upload = async (file: StrapiFile, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
+      const Body = await compressDocument(file);
       try {
         await S3.send(
           new PutObjectCommand({
             Bucket: config.params.Bucket,
             ACL: config.params.ACL,
             Key,
-            Body: file.stream || Buffer.from(file.buffer, "binary"),
+            Body,
             ContentType: file.mime,
             ...customParams,
           })
