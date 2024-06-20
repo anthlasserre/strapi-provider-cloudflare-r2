@@ -35,7 +35,9 @@
   ],
   "scripts": {
     "test": "echo \"no tests yet\"",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
   "release": {
     "branches": [
@@ -62,6 +64,8 @@
     "url": "https://github.com/trieb-work/strapi-provider-cloudflare-r2.git"
   },
   "devDependencies": {
-    "semantic-release": "^21.0.7"
+    "@types/node": "^20.14.6",
+    "semantic-release": "^21.0.7",
+    "typescript": "^5.5.2"
   }
 }

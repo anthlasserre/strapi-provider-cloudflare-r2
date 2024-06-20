@@ -9,14 +9,38 @@ const {
   DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
-} = require('@aws-sdk/client-s3');
-const { getSignedUrl: getS3SignedUrl } = require('@aws-sdk/s3-request-presigner');
+} = require("@aws-sdk/client-s3");
+const {
+  getSignedUrl: getS3SignedUrl,
+} = require("@aws-sdk/s3-request-presigner");
 
-function removeLeadingSlash(str) {
+type StrapiFile = {
+  path: string;
+  folderPath: string;
+  hash: string;
+  ext: string;
+  mime: string;
+  buffer: WithImplicitCoercion<string>;
+  stream: unknown;
+  url: string;
+};
+
+type PluginConfig = {
+  cloudflarePublicAccessUrl: string;
+  region: "auto" | string;
+  pool: boolean;
+  params: {
+    Bucket: string;
+    ACL: string;
+    Location: string;
+  };
+};
+
+function removeLeadingSlash(str: string) {
   return str.replace(/^\//, "");
 }
 
-function getPathKey(file, pool = false) {
+function getPathKey(file: StrapiFile, pool = false) {
   const filePath = file.path ? `${file.path}/` : "";
   let path = filePath;
   if (!pool) {
@@ -30,28 +54,13 @@ function getPathKey(file, pool = false) {
   return { path, Key };
 }
 
-function assertUrlProtocol(url) {
+function assertUrlProtocol(url: string) {
   // Regex to test protocol like "http://", "https://"
   return /^\w*:\/\//.test(url);
 }
 
-function getFileURL(file, config) {
-  if (config.cloudflarePublicAccessUrl) {
-    file.url =
-      config.cloudflarePublicAccessUrl.replace(/\/$/g, "") +
-      "/" +
-      key;
-  } else if (data.Location !== "auto") {
-    file.url = data.Location;
-  } else if (config.params.ACL !== "private") {
-    throw new Error(
-      "Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2 requires cloudflarePublicAccessUrl to upload files larger than 5MB. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration"
-    );
-  }
-}
-
 module.exports = {
-  init: (config) => {
+  init: (config: PluginConfig) => {
     const S3 = new S3Client({
       ...config,
       region: config.region || "auto",
@@ -74,7 +83,25 @@ module.exports = {
       );
     }
 
-    const upload = async (file, customParams = {}) => {
+    const getFileURL = async (file: StrapiFile): Promise<string> => {
+      const { Key } = getPathKey(file);
+      if (config.cloudflarePublicAccessUrl) {
+        return config.cloudflarePublicAccessUrl.replace(/\/$/g, "") + "/" + Key;
+      } else if (config.params.ACL === "private") {
+        return getS3SignedUrl(
+          S3,
+          new GetObjectCommand({ Bucket: config?.params?.Bucket, Key }),
+          { expiresIn: 3600 }
+        ) as Promise<string>;
+      } else if (config.region !== "auto") {
+        return config.params.Location + "/" + Key;
+      }
+      throw new Error(
+        "Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2 requires cloudflarePublicAccessUrl to upload files larger than 5MB. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration"
+      );
+    };
+
+    const upload = async (file: StrapiFile, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
       try {
         await S3.send(
@@ -88,7 +115,7 @@ module.exports = {
           })
         );
 
-        file.url = getFileURL(file, config);
+        file.url = await getFileURL(file);
 
         // check if https is included in file URL
         if (!assertUrlProtocol(file.url)) {
@@ -100,7 +127,7 @@ module.exports = {
       }
     };
 
-    const _delete = async (file, customParams = {}) => {
+    const _delete = async (file: StrapiFile, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
       try {
         await S3.send(
@@ -113,13 +140,16 @@ module.exports = {
       } catch (error) {
         console.log("An error occurred while deleting the file", error);
       }
-    }
+    };
 
-
-    const getSignedUrl = async (file) => {
+    const getSignedUrl = async (file: StrapiFile) => {
       const { Key } = getPathKey(file, config.pool);
       try {
-        const url = await getS3SignedUrl(S3, new GetObjectCommand({ Bucket: config?.params?.Bucket, Key }), { expiresIn: 3600 });
+        const url = await getS3SignedUrl(
+          S3,
+          new GetObjectCommand({ Bucket: config?.params?.Bucket, Key }),
+          { expiresIn: 3600 }
+        );
         return { url };
       } catch (error) {
         console.log("An error occurred while generating the signed URL", error);
@@ -128,7 +158,7 @@ module.exports = {
 
     const isPrivate = async () => {
       return config.params.ACL === "private";
-    }
+    };
 
     return {
       uploadStream: upload,
@@ -136,6 +166,6 @@ module.exports = {
       delete: _delete,
       getSignedUrl,
       isPrivate,
-    }
-  }
+    };
+  },
 };
