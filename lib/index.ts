@@ -1,21 +1,12 @@
-"use strict";
-
-/**
- * Module dependencies
- */
-const _ = require("lodash");
-const {
+import {
   S3Client,
   DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
-} = require("@aws-sdk/client-s3");
-const {
-  getSignedUrl: getS3SignedUrl,
-} = require("@aws-sdk/s3-request-presigner");
-const path = require("path");
-const fs = require("fs");
-const { compress: compressPDF } = require("compress-pdf");
+  ObjectCannedACL,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl as getS3SignedUrl } from "@aws-sdk/s3-request-presigner";
+import { compress as compressPDF } from "compress-pdf";
 
 type StrapiFile = {
   path: string;
@@ -24,7 +15,7 @@ type StrapiFile = {
   ext: string;
   mime: string;
   buffer: WithImplicitCoercion<string>;
-  stream: unknown;
+  stream: string;
   url: string;
 };
 
@@ -34,7 +25,7 @@ type PluginConfig = {
   pool: boolean;
   params: {
     Bucket: string;
-    ACL: string;
+    ACL: ObjectCannedACL;
     Location: string;
   };
 };
@@ -73,7 +64,7 @@ const assertUrlProtocol = (url: string) => {
   return /^\w*:\/\//.test(url);
 };
 
-module.exports = {
+export default {
   init: (config: PluginConfig) => {
     const S3 = new S3Client({
       ...config,
@@ -124,6 +115,7 @@ module.exports = {
             Bucket: config.params.Bucket,
             ACL: config.params.ACL,
             Key,
+            // @ts-expect-error
             Body,
             ContentType: file.mime,
             ...customParams,
