@@ -19,7 +19,7 @@
   ],
   "homepage": "https://github.com/trieb-work/strapi-provider-cloudflare-r2 ",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "./lib",
+  "main": "./lib/index.js",
   "directories": {
     "lib": "./lib"
   },
