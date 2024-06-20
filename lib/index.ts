@@ -16,6 +16,7 @@ const {
 const path = require("path");
 const fs = require("fs");
 const { compress: compressPDF } = require("compress-pdf");
+const os = require("os");
 
 type StrapiFile = {
   path: string;
@@ -39,11 +40,31 @@ type PluginConfig = {
   };
 };
 
+const getGsBinPath = (platform: NodeJS.Platform) => {
+  if (platform === "linux") {
+    return "/usr/bin/gs";
+  }
+
+  if (platform === "win32") {
+    return "gswin64c";
+  }
+
+  if (platform === "darwin") {
+    return "/opt/homebrew/bin/gs";
+  }
+
+  throw new Error(
+    "not possible to get binaries path, unsupported platform was provided"
+  );
+};
+
 const compressDocument = async (
   file: StrapiFile
 ): Promise<unknown | Buffer> => {
   if (file.ext === ".pdf") {
-    return compressPDF(file.stream || Buffer.from(file.buffer, "binary"));
+    return compressPDF(file.stream || Buffer.from(file.buffer, "binary"), {
+      gsModule: getGsBinPath(os.platform()),
+    });
   }
   return file.stream || Buffer.from(file.buffer, "binary");
 };

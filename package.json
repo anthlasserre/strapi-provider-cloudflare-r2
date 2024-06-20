@@ -51,7 +51,8 @@
     "@aws-sdk/client-s3": "^3.583.0",
     "@aws-sdk/s3-request-presigner": "^3.587.0",
     "compress-pdf": "^0.5.1",
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "os": "^0.1.2"
   },
   "peerDependencies": {
     "@strapi/strapi": ">=4.0.0"
