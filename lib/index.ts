@@ -20,13 +20,13 @@ type StrapiFile = {
 };
 
 type PluginConfig = {
-  cloudflarePublicAccessUrl: string;
+  cloudflarePublicAccessUrl?: string;
   region: "auto" | string;
-  pool: boolean;
+  pool?: boolean;
   params: {
     Bucket: string;
     ACL: ObjectCannedACL;
-    Location: string;
+    Location?: string;
   };
 };
 

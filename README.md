@@ -46,7 +46,6 @@ module.exports = ({ env }) => ({
         params: {
           ACL: 'private',
           Bucket: env("CF_BUCKET"),
-          accountId: env("CF_ACCOUNT_ID"),
         },
         /**
          * Set this Option to store the CDN URL of your files and not the R2 endpoint URL in your DB.
