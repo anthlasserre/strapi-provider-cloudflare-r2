@@ -19,8 +19,10 @@
   ],
   "homepage": "https://github.com/trieb-work/strapi-provider-cloudflare-r2 ",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "./lib/index.js",
-  "bin": "./lib/index.js",
+  "main": "./lib",
+  "directories": {
+    "lib": "./lib"
+  },
   "author": {
     "name": "Tilman Marquart | trieb.work",
     "url": "https://trieb.work"
@@ -34,8 +36,7 @@
   "scripts": {
     "test": "echo \"no tests yet\"",
     "semantic-release": "semantic-release",
-    "build": "tsc",
-    "postinstall": "npm run build"
+    "build": "tsc"
   },
   "release": {
     "branches": [
