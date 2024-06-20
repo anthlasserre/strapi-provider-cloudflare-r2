@@ -20,9 +20,7 @@
   "homepage": "https://github.com/trieb-work/strapi-provider-cloudflare-r2 ",
   "license": "SEE LICENSE IN LICENSE",
   "main": "./lib/index.js",
-  "directories": {
-    "lib": "./lib"
-  },
+  "bin": "./lib/index.js",
   "author": {
     "name": "Tilman Marquart | trieb.work",
     "url": "https://trieb.work"
