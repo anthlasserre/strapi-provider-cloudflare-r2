@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   PutObjectCommand,
   ObjectCannedACL,
+  S3ClientConfig,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl as getS3SignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compress as compressPDF } from "compress-pdf";
@@ -19,16 +20,15 @@ type StrapiFile = {
   url: string;
 };
 
-type PluginConfig = {
+interface PluginConfig extends S3ClientConfig {
   cloudflarePublicAccessUrl?: string;
-  region: "auto" | string;
   pool?: boolean;
   params: {
     Bucket: string;
     ACL: ObjectCannedACL;
     Location?: string;
   };
-};
+}
 
 const compressDocument = async (
   file: StrapiFile
