@@ -38,6 +38,7 @@
   "scripts": {
     "build": "pack-up build",
     "clean": "run -T rimraf ./dist",
+    "release": "bumpp --tag --push --all",
     "watch": "pack-up watch"
   },
   "dependencies": {
@@ -50,6 +51,7 @@
   "devDependencies": {
     "@strapi/pack-up": "^5.0.0",
     "@types/node": "^20.14.6",
+    "bumpp": "^9.4.1",
     "semantic-release": "^21.0.7",
     "typescript": "^5.5.2"
   },
