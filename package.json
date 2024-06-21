@@ -1,12 +1,7 @@
 {
-  "name": "strapi-provider-cloudflare-r2",
-  "version": "0.0.0-development",
+  "name": "@anthlasserre/strapi-provider-cloudflare-r2",
+  "version": "0.0.1",
   "description": "Strapi Cloudflare R2+CDN provider for strapi upload",
-  "strapi": {
-    "name": "strapi-provider-cloudflare-r2",
-    "description": "Use Cloudflare R2 in combination with the Cloudflare CDN as your upload provider",
-    "kind": "provider"
-  },
   "keywords": [
     "cloudflare",
     "strapi",
@@ -17,32 +12,33 @@
     "aws",
     "s3"
   ],
-  "homepage": "https://github.com/trieb-work/strapi-provider-cloudflare-r2 ",
+  "homepage": "https://github.com/anthlasserre/strapi-provider-cloudflare-r2 ",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthlasserre/strapi-provider-cloudflare-r2.git"
+  },
   "license": "SEE LICENSE IN LICENSE",
-  "main": "./lib/index.js",
-  "bin": "./bin/index.js",
   "author": {
     "name": "Tilman Marquart | trieb.work",
     "url": "https://trieb.work"
   },
   "maintainers": [
     {
-      "name": "trieb.work",
-      "url": "https://trieb.work"
+      "name": "Anthony Lasserre",
+      "url": "https://anthonylasserre.me"
     }
   ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "source": "./lib/index.ts",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist"
+  ],
   "scripts": {
-    "test": "echo \"no tests yet\"",
-    "semantic-release": "semantic-release",
-    "build": "tsc"
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
-  },
-  "publishConfig": {
-    "access": "public"
+    "build": "pack-up build",
+    "clean": "run -T rimraf ./dist",
+    "watch": "pack-up watch"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.583.0",
@@ -51,20 +47,22 @@
     "lodash": "4.17.21",
     "os": "^0.1.2"
   },
+  "devDependencies": {
+    "@strapi/pack-up": "^5.0.0",
+    "@types/node": "^20.14.6",
+    "semantic-release": "^21.0.7",
+    "typescript": "^5.5.2"
+  },
   "peerDependencies": {
     "@strapi/strapi": ">=4.0.0"
   },
   "engines": {
-    "node": ">=14.19.1",
+    "node": ">=18.0.0 <=20.x.x",
     "npm": ">=6.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/trieb-work/strapi-provider-cloudflare-r2.git"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.6",
-    "semantic-release": "^21.0.7",
-    "typescript": "^5.5.2"
+  "strapi": {
+    "name": "strapi-provider-cloudflare-r2",
+    "description": "Use Cloudflare R2 in combination with the Cloudflare CDN as your upload provider",
+    "kind": "provider"
   }
 }
