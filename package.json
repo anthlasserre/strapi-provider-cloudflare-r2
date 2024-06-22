@@ -38,6 +38,7 @@
   "scripts": {
     "build": "pack-up build",
     "clean": "run -T rimraf ./dist",
+    "prepare": "husky install",
     "release": "bumpp --tag --push --all",
     "watch": "pack-up watch"
   },
