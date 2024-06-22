@@ -7,7 +7,6 @@ import {
   S3ClientConfig,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl as getS3SignedUrl } from "@aws-sdk/s3-request-presigner";
-import { compress as compressPDF } from "compress-pdf";
 
 type StrapiFile = {
   path: string;
@@ -29,17 +28,6 @@ interface PluginConfig extends S3ClientConfig {
     Location?: string;
   };
 }
-
-const compressDocument = async (
-  file: StrapiFile
-): Promise<unknown | Buffer> => {
-  if (file.ext === ".pdf") {
-    return compressPDF(file.stream || Buffer.from(file.buffer, "binary"), {
-      gsModule: "/opt/homebrew/bin/g",
-    });
-  }
-  return file.stream || Buffer.from(file.buffer, "binary");
-};
 
 const removeLeadingSlash = (str: string) => {
   return str.replace(/^\//, "");
@@ -108,14 +96,13 @@ export default {
 
     const upload = async (file: StrapiFile, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
-      const Body = await compressDocument(file);
+      const Body = file.stream || Buffer.from(file.buffer, "binary");
       try {
         await S3.send(
           new PutObjectCommand({
             Bucket: config.params.Bucket,
             ACL: config.params.ACL,
             Key,
-            // @ts-expect-error
             Body,
             ContentType: file.mime,
             ...customParams,

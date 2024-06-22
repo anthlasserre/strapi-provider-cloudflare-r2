@@ -2643,14 +2643,6 @@ compare-func@^2.0.0:
     array-ify "^1.0.0"
     dot-prop "^5.1.0"
 
-compress-pdf@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/compress-pdf/-/compress-pdf-0.5.1.tgz#00ed6466cb7e8d70965be5d11d9c398246e7b1d6"
-  integrity sha512-yDlqd65GjvIXEFf0LxUxOvOgGijOhdDa+dcs1j/hGUl6YMs2eaymb8J5Y9lRjNv+d7SLYl85hT+I19BJsHbeQw==
-  dependencies:
-    dotenv "16.4.1"
-    lodash "4.17.21"
-
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -2895,11 +2887,6 @@ dot-prop@^5.1.0:
   integrity sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==
   dependencies:
     is-obj "^2.0.0"
-
-dotenv@16.4.1:
-  version "16.4.1"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.1.tgz#1d9931f1d3e5d2959350d1250efab299561f7f11"
-  integrity sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==
 
 dotenv@^16.4.5:
   version "16.4.5"

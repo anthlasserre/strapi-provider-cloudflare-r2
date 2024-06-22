@@ -1,14 +1,5 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { compress } from "compress-pdf";
-const compressDocument = async (file) => {
-  if (file.ext === ".pdf") {
-    return compress(file.stream || Buffer.from(file.buffer, "binary"), {
-      gsModule: "/opt/homebrew/bin/g"
-    });
-  }
-  return file.stream || Buffer.from(file.buffer, "binary");
-};
 const removeLeadingSlash = (str) => {
   return str.replace(/^\//, "");
 };
@@ -64,14 +55,13 @@ const index = {
     };
     const upload = async (file, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
-      const Body = await compressDocument(file);
+      const Body = file.stream || Buffer.from(file.buffer, "binary");
       try {
         await S3.send(
           new PutObjectCommand({
             Bucket: config.params.Bucket,
             ACL: config.params.ACL,
             Key,
-            // @ts-expect-error
             Body,
             ContentType: file.mime,
             ...customParams
