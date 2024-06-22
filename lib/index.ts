@@ -108,14 +108,6 @@ export default {
             ...customParams,
           })
         );
-
-        file.url = await getFileURL(file);
-
-        // check if https is included in file URL
-        if (!assertUrlProtocol(file.url)) {
-          // Default protocol to https protocol
-          file.url = `https://${file.url}`;
-        }
       } catch (error) {
         console.log("An error occurred while uploading the file", error);
       }

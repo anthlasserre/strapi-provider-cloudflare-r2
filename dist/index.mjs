@@ -12,9 +12,6 @@ const getPathKey = (file, pool = false) => {
   const Key = `${path}${file.hash}${file.ext}`;
   return { path, Key };
 };
-const assertUrlProtocol = (url) => {
-  return /^\w*:\/\//.test(url);
-};
 const index = {
   init: (config) => {
     const S3 = new S3Client({
@@ -36,23 +33,6 @@ const index = {
         )} env variable(s) or rename+change them in plugin config. See more: https://github.com/trieb-work/strapi-provider-cloudflare-r2#aws-sdk-configuration-and-aws_-env-variables`
       );
     }
-    const getFileURL = async (file) => {
-      const { Key } = getPathKey(file);
-      if (config.cloudflarePublicAccessUrl) {
-        return config.cloudflarePublicAccessUrl.replace(/\/$/g, "") + "/" + Key;
-      } else if (config.params.ACL === "private") {
-        return getSignedUrl(
-          S3,
-          new GetObjectCommand({ Bucket: config?.params?.Bucket, Key }),
-          { expiresIn: 3600 }
-        );
-      } else if (config.region !== "auto") {
-        return config.params.Location + "/" + Key;
-      }
-      throw new Error(
-        "Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2 requires cloudflarePublicAccessUrl to upload files larger than 5MB. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration"
-      );
-    };
     const upload = async (file, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
       const Body = file.stream || Buffer.from(file.buffer, "binary");
@@ -67,10 +47,6 @@ const index = {
             ...customParams
           })
         );
-        file.url = await getFileURL(file);
-        if (!assertUrlProtocol(file.url)) {
-          file.url = `https://${file.url}`;
-        }
       } catch (error) {
         console.log("An error occurred while uploading the file", error);
       }
