@@ -44,6 +44,7 @@ const index = {
             Key,
             Body,
             ContentType: file.mime,
+            ContentLength: file.size,
             ...customParams
           })
         );

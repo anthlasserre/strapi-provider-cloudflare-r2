@@ -17,6 +17,7 @@ type StrapiFile = {
   buffer: WithImplicitCoercion<string>;
   stream: string;
   url: string;
+  size: number;
 };
 
 interface PluginConfig extends S3ClientConfig {
@@ -76,24 +77,6 @@ export default {
       );
     }
 
-    const getFileURL = async (file: StrapiFile): Promise<string> => {
-      const { Key } = getPathKey(file);
-      if (config.cloudflarePublicAccessUrl) {
-        return config.cloudflarePublicAccessUrl.replace(/\/$/g, "") + "/" + Key;
-      } else if (config.params.ACL === "private") {
-        return getS3SignedUrl(
-          S3,
-          new GetObjectCommand({ Bucket: config?.params?.Bucket, Key }),
-          { expiresIn: 3600 }
-        ) as Promise<string>;
-      } else if (config.region !== "auto") {
-        return config.params.Location + "/" + Key;
-      }
-      throw new Error(
-        "Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2 requires cloudflarePublicAccessUrl to upload files larger than 5MB. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration"
-      );
-    };
-
     const upload = async (file: StrapiFile, customParams = {}) => {
       const { Key } = getPathKey(file, config.pool);
       const Body = file.stream || Buffer.from(file.buffer, "binary");
@@ -105,6 +88,7 @@ export default {
             Key,
             Body,
             ContentType: file.mime,
+            ContentLength: file.size,
             ...customParams,
           })
         );

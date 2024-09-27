@@ -9,6 +9,7 @@ type StrapiFile = {
     buffer: WithImplicitCoercion<string>;
     stream: string;
     url: string;
+    size: number;
 };
 interface PluginConfig extends S3ClientConfig {
     cloudflarePublicAccessUrl?: string;

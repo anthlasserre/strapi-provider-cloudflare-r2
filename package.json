@@ -1,6 +1,6 @@
 {
   "name": "@anthlasserre/strapi-provider-cloudflare-r2",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Strapi Cloudflare R2+CDN provider for strapi upload",
   "keywords": [
     "cloudflare",
